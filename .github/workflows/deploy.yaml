@@ -1,0 +1,26 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.2
+
+      - name: Terraform Apply
+        run: |
+          cd terraform/environments/dev
+          terraform init
+          terraform apply -auto-approve
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
